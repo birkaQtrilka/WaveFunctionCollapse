@@ -2,7 +2,7 @@
 
 namespace gxpengine_template.MyClasses.WaveFunctionCollapse
 {
-    public class TheGame : GameObject
+    public class Displayer : GameObject
     {
         readonly Tile[] _tiles = new Tile[6];
         readonly Grid grid;
@@ -10,7 +10,7 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
         int _timer = 0;
         int _endTime = 50;
         //TOP RIGHT DOWN LEFT
-        public TheGame() 
+        public Displayer() 
         {
             _tiles[0] = new Tile(0,true,true,"ABA", "ABA", "ABA", "ABA");
             _tiles[1] = new Tile(1,true,false,"AAA", "ABA", "AAA", "ABA");

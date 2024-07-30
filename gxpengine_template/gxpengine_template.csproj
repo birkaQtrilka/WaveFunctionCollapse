@@ -88,7 +88,7 @@
     <Compile Include="MyClasses\MyUtils.cs" />
     <Compile Include="MyClasses\Cell.cs" />
     <Compile Include="MyClasses\Grid.cs" />
-    <Compile Include="MyClasses\TheGame.cs" />
+    <Compile Include="MyClasses\Displayer.cs" />
     <Compile Include="MyClasses\Tile.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

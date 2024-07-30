@@ -17,7 +17,7 @@ namespace gxpengine_template.MyClasses
 
         public void LoadScene()
         {
-            LateAddChild(new TheGame());
+            LateAddChild(new Displayer());
         }
 
         

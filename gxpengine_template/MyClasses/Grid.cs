@@ -26,23 +26,7 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
             var statesList = allTiles.Concat(rotatedTiles);
             GenerateGrid(columns, statesList);
             
-            PopulateGrid(columns, allTiles);
-        }
-
-        void PopulateGrid(int columns, Tile[] allTiles)
-        {
-            for (int y = 0; y < columns; y++)
-            {
-                for (int x = 0; x < columns; x++)
-                {
-                    if (x == 0 || y == 0 || x == _cells.GetLength(1) - 1 || y == _cells.GetLength(0) - 1)
-                    {
-                        Cell cell = _cells[y, x];
-                        CollapseCellWithTile(cell, allTiles[allTiles.Length - 2]);
-                        Propagate(cell);
-                    }
-                }
-            }
+            FillGridEdgesWithEmptyTiles(columns, allTiles);
         }
 
         void GenerateGrid(int columns, IEnumerable<Tile> statesList)
@@ -58,6 +42,23 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
             }
         }
 
+        void FillGridEdgesWithEmptyTiles(int columns, Tile[] allTiles)
+        {
+            for (int y = 0; y < columns; y++)
+            {
+                for (int x = 0; x < columns; x++)
+                {
+                    if (x == 0 || y == 0 || x == _cells.GetLength(1) - 1 || y == _cells.GetLength(0) - 1)
+                    {
+                        Cell cell = _cells[y, x];
+                        int emptyTileIndex = allTiles.Length - 2;//hard coded
+                        CollapseCellWithTile(cell, allTiles[emptyTileIndex]);
+                        Propagate(cell);
+                    }
+                }
+            }
+        }
+
         List<Tile> GenerateRotateTileStates(Tile[] unrotatedTiles)
         {
             List<Tile> rotatedTiles = new List<Tile>();
@@ -66,7 +67,9 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
             {
                 for (int i = 1; i < 4; i++)
                 {
-                    if ((tile.SymetryH && i % 2 == 0) || (tile.SymetryV && i % 2 != 0))
+                    //the odd/even checks are because the symetric versions of tiles will be one array slot appart
+                    //(180 degrees since every array slot is a 90 degree rotation) 
+                    if ((tile.SymetryHorizontal && i % 2 == 0) || (tile.SymetryVertical && i % 2 != 0))
                         continue;
 
                     Tile newTile = tile.Clone();
@@ -117,7 +120,7 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
             cell.CollapsedTile = prototype.Clone();
             Tile tile = cell.CollapsedTile;
 
-            AddChild(tile);
+            AddChild(tile);//instantiating visual
             tile.SetXY(cell.X * _cellWidth + 0.5f * _cellWidth, cell.Y * _cellWidth + 0.5f * _cellWidth);
             tile.width = (int)_cellWidth;
             tile.height = (int)_cellWidth;
@@ -127,9 +130,8 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
 
         public void Propagate(Cell cell)
         {
-            foreach (CellAndDir val in GetNeighbouringCellsAndDir(cell.X, cell.Y))
+            foreach (CellAndDir val in GetNeighbouringCellsAndDirections(cell.X, cell.Y))
             {
-               
                 Cell neighbour = val.cell;
                 if (neighbour.CollapsedTile != null) continue;
 
@@ -141,14 +143,14 @@ namespace gxpengine_template.MyClasses.WaveFunctionCollapse
                 {
                     List<Tile> possibilities = neighbour.Possibilities;
                     Tile possibility = possibilities[i];
-                    //here are the rules
+                    //the modulo operation is to overlap values, the addition to two is because the opposite side of cell is 2 array slots appart
                     if (possibility.Sockets[(dir + 2) % 4] != mySockets)
                         possibilities.RemoveAt(i--);
                 }
             }
         }
 
-        List<CellAndDir> GetNeighbouringCellsAndDir(int x, int y)
+        List<CellAndDir> GetNeighbouringCellsAndDirections(int x, int y)
         {
             List<CellAndDir> neighbours = new List<CellAndDir>();
             if (x - 1 >= 0)
